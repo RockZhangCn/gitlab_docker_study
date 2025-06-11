@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    hostname: gitlab.local
+    restart: always
+    ports:
+      - "80:80"
+      - "8443:443"
+      - "2222:22"
+    volumes:
+      - ${HOME}/gitlab/config:/etc/gitlab
+      - ${HOME}/gitlab/logs:/var/log/gitlab
+      - ${HOME}/gitlab/data:/var/opt/gitlab
+    tmpfs:
+      - /dev/shm:exec,size=256M  # 设置 /dev/shm 的大小为 1GB 并启用 exec
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: always
+    network_mode: "host"
+    volumes:
+      - /srv/gitlab-runner/config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
